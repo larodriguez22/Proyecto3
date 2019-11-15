@@ -1,5 +1,6 @@
 package controller;
 
+import java.io.IOException;
 import java.util.Scanner;
 
 import model.logic.MVCModelo;
@@ -9,10 +10,10 @@ public class Controller {
 
 	/* Instancia del Modelo*/
 	private MVCModelo modelo;
-	
+
 	/* Instancia de la Vista*/
 	private MVCView view;
-	
+
 	/**
 	 * Crear la vista y el modelo del proyecto
 	 * @param capacidad tamaNo inicial del arreglo
@@ -27,7 +28,7 @@ public class Controller {
 			e.printStackTrace();
 		}
 	}
-		
+
 	public void run() 
 	{
 		Scanner lector = new Scanner(System.in);
@@ -40,41 +41,48 @@ public class Controller {
 
 			int option = lector.nextInt();
 			switch(option){
-				case 1:
-					System.out.println("--------- \nCargar datos ");
-				    int capacidad = lector.nextInt();
-				    modelo = new MVCModelo(); 
-				    modelo.cargarTxtHash();					
-					break;
+			case 1:
+				System.out.println("--------- \nCargar datos ");
+				int capacidad = lector.nextInt();
 
-				case 2:
-					System.out.println("--------- \nEsquema JSON para persistir el grafo: ");
-					dato = lector.next();
-					modelo.crearJson();
-											
-					break;
+				try {
+					modelo.cargarTxtHash();
+					modelo = new MVCModelo();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 
-				case 3:
-					System.out.println("--------- \nCantidad de componentes conectados en el grafo: ");
-					modelo.cantidadComponentesConectados();					
-					break;
+				}					
+				break;
 
-				case 4:
-					System.out.println("--------- \nGrafica con ayuda de Google Maps: ");
-					modelo.graficaGoogleMaps();			
-					break;
-					
-				case 5: 
-					System.out.println("--------- \n Hasta pronto !! \n---------"); 
-					lector.close();
-					fin = true;
-					break;	
+			case 2:
+				System.out.println("--------- \nEsquema JSON para persistir el grafo: ");
+				dato = lector.next();
+				modelo.crearJson();
 
-				default: 
-					System.out.println("--------- \n Opcion Invalida !! \n---------");
-					break;
+				break;
+
+			case 3:
+				System.out.println("--------- \nCantidad de componentes conectados en el grafo: ");
+				modelo.cantidadComponentesConectados();					
+				break;
+
+			case 4:
+				System.out.println("--------- \nGrafica con ayuda de Google Maps: ");
+				modelo.graficaGoogleMaps();			
+				break;
+
+			case 5: 
+				System.out.println("--------- \n Hasta pronto !! \n---------"); 
+				lector.close();
+				fin = true;
+				break;	
+
+			default: 
+				System.out.println("--------- \n Opcion Invalida !! \n---------");
+				break;
 			}
 		}
-		
+
 	}	
 }
