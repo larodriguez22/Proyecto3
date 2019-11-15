@@ -6,10 +6,14 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.Reader;
 import java.util.Arrays;
 
 import model.data_structures.Graph;
 import model.data_structures.Queue;
+import com.google.gson.Gson;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonToken;
 
 
 /**
@@ -96,11 +100,36 @@ public class MVCModelo<K> {
 
 	public void crearJson() {
 		// TODO Auto-generated method stub
-		
+
+        Gson gson = new Gson();
+        // Java objects to File
+        try (FileWriter writer = new FileWriter("./data/data.json")) {
+            gson.toJson(grafo, writer);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+	public void leerJson(){
+		Gson gson = new Gson();
+		String path = "./data/data.json";
+		JsonReader reader;
+		try {
+			reader = new JsonReader(new FileReader(path));
+			grafo = gson.fromJson(reader, Informacion.class);
+			
+
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 	}
+	
 
 	public void cantidadComponentesConectados() {
 		// TODO Auto-generated method stub
+		System.out.println("Cantidad de componentes conexos: "+ grafo.ccn());
 		
 	}
 
