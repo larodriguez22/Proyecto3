@@ -1,113 +1,229 @@
 package model.data_structures;
-/*
- * Copyright 2014, Michael T. Goodrich, Roberto Tamassia, Michael H. Goldwasser
- *
- * Developed for use with the book:
- *
- *    Data Structures and Algorithms in Java, Sixth Edition
- *    Michael T. Goodrich, Roberto Tamassia, and Michael H. Goldwasser
- *    John Wiley & Sons, 2014
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
+
+import java.util.Iterator;
+
+import model.logic.Edge;
+import model.logic.Informacion;
+import model.logic.Vertex;
+
+public class Graph <K extends Comparable<K>, Val> 
+{
+	//Codigo tomado de: https://github.com/kevin-wayne/algs4/blob/master/src/main/java/edu/princeton/cs/algs4/Graph.java
+	//					https://github.com/kevin-wayne/algs4/blob/master/src/main/java/edu/princeton/cs/algs4/DepthFirstPaths.java
+	//Copyright 2002-2018, Robert Sedgewick and Kevin Wayne.
+
+	private static final String NEWLINE = System.getProperty("line.separator");
+
+	private final int V;
+	private int E;
+	private LinearProbingHashST<K, Vertex> adj;
+	private LinearProbingHashST<K, Boolean> marked;
+	private LinearProbingHashST<K, Integer> cc;
+	private int[] id;           // id[v] = id of connected component containing v
+	private int[] size;         // size[id] = number of vertices in given component
+	private int count;          // number of connected components
 
 
-/**
- * An interface for a graph structure. A graph can be declared as either directed or undirected.
- * In the case of an undirected graph, methods outgoingEdges and incomingEdges return the same collection,
- * and outDegree and inDegree return the same value.
- *
- * Every vertex stores an element of type V (possibly null).
- * Every edge stores an element of type E (possibly null).
- *
- * @author Michael T. Goodrich
- * @author Roberto Tamassia
- * @author Michael H. Goldwasser
- */
-public interface Graph<V,E> {
+	/**
+	 * Initializes an empty graph with {@code V} vertices and 0 edges.
+	 * param V the number of vertices
+	 *
+	 * @param  V number of vertices
+	 * @throws IllegalArgumentException if {@code V < 0}
+	 */
+	public Graph(int V) {
+		this.V = V;
+		this.E = 0;
+		adj = new LinearProbingHashST<>(V);
+		marked = new LinearProbingHashST<>(V);
+		cc = new LinearProbingHashST<>(V);
+	}
 
-  /** Returns the number of vertices of the graph */
-  int numVertices();
+	/**
+	 * Returns the number of vertices in this graph.
+	 *
+	 * @return the number of vertices in this graph
+	 */
+	public int V() {
+		return V;
+	}
 
-  /** Returns the number of edges of the graph */
-  int numEdges();
+	/**
+	 * Returns the number of edges in this graph.
+	 *
+	 * @return the number of edges in this graph
+	 */
+	public int E() {
+		return E;
+	}
 
-  /** Returns the vertices of the graph as an iterable collection */
-  Iterable<Vertex<V>> vertices();
+	/**
+	 * Adds the undirected edge v-w to this graph.
+	 *
+	 * @param  v one vertex in the edge
+	 * @param  w the other vertex in the edge
+	 * @throws IllegalArgumentException unless both {@code 0 <= v < V} and {@code 0 <= w < V}
+	 */
+	public void addEdge(K idVertexIni, K idVertexFin, double cost) {
+		E++;
+		Vertex v1 = (Vertex) adj.get(idVertexIni);
+		Vertex v2 = (Vertex) adj.get(idVertexFin);
+		String costoArco = String.valueOf(cost);
+		String idv1 = String.valueOf(idVertexIni);
+		String idv2 = String.valueOf(idVertexFin);
+		Edge edge = new Edge(idv1, idv2, costoArco);
+		v1.getAdj().enqueue(v2);
+		v2.getAdj().enqueue(v1);
+		v1.getEdgeTos().enqueue(edge);
+		v2.getEdgeTos().enqueue(edge);
+	}
 
-  /** Returns the edges of the graph as an iterable collection */
-  Iterable<Edge<E>> edges();
 
-  /**
-   * Returns the number of edges leaving vertex v.
-   * Note that for an undirected graph, this is the same result
-   * returned by inDegree
-   * @throws IllegalArgumentException if v is not a valid vertex
-   */
-  int outDegree(Vertex<V> v) throws IllegalArgumentException;
+	/**
+	 * 
+	 *
+	 * @param  v one vertex in the edge
+	 */
+	public void addVertex(K idVertex, Val infoVertex) {
+		String id = String.valueOf(idVertex);
+		Vertex nuevo = new Vertex((Informacion)infoVertex, Integer.parseInt(id));
+		adj.put(idVertex, nuevo);
+	}
 
-  /**
-   * Returns the number of edges for which vertex v is the destination.
-   * Note that for an undirected graph, this is the same result
-   * returned by outDegree
-   * @throws IllegalArgumentException if v is not a valid vertex
-   */
-  int inDegree(Vertex<V> v) throws IllegalArgumentException;
+	/**
+	 * Returns the vertices adjacent to vertex {@code v}.
+	 *
+	 * @param  v the vertex
+	 * @return the vertices adjacent to vertex {@code v}, as an iterable
+	 * @throws IllegalArgumentException unless {@code 0 <= v < V}
+	 */
+	public Iterable<K> adj(K idVertex) {
+		Queue<K> ids = new Queue<K>();
+		Vertex aux = (Vertex)adj.get(idVertex);
+		Queue<Vertex> adyacentes = aux.getAdj();
+		int tam = adyacentes.size();
+		for (int i = 0; i < tam; i++) {
+			Vertex actual = adyacentes.dequeue();
+			K idAct = (K)(Object)actual.getId();
+			ids.enqueue(idAct);
+			adyacentes.enqueue(actual);
+		}
+		Queue<K> adya = (Queue<K>) ids.iterator();
+		return adya;
+	}
 
-  /**
-   * Returns an iterable collection of edges for which vertex v is the origin.
-   * Note that for an undirected graph, this is the same result
-   * returned by incomingEdges.
-   * @throws IllegalArgumentException if v is not a valid vertex
-   */
-  Iterable<Edge<E>> outgoingEdges(Vertex<V> v) throws IllegalArgumentException;
+	/**
+	 * Computes the connected components of the undirected graph {@code G}.
+	 *
+	 * @param G the undirected graph
+	 */
+	public void CC() {
+		Iterator<K> marcados = (Iterator<K>) marked.keys();
+		while(marcados.hasNext()) {
+			K llave = marcados.next();
+			boolean valor = (boolean)marked.get(llave);
+			if (!valor) {
+				dfs(llave);
+				count++;	
+			}
+		}
+	}
 
-  /**
-   * Returns an iterable collection of edges for which vertex v is the destination.
-   * Note that for an undirected graph, this is the same result
-   * returned by outgoingEdges.
-   * @throws IllegalArgumentException if v is not a valid vertex
-   */
-  Iterable<Edge<E>> incomingEdges(Vertex<V> v) throws IllegalArgumentException;
+	public void dfs(K v) {
+		marked.put(v, true);
+		Vertex vAct = (Vertex) adj.get(v);
+		Queue<Vertex> adyacentes = vAct.getAdj();
+		int tam = adyacentes.size();
+		for (int i = 0; i < tam; i++) {
+			Vertex actual = adyacentes.dequeue();
+			if (marked.get((K) actual) == null) {
+				marked.put((K) actual, true);
+			}
+			else {
+				boolean valor = marked.get((K) actual);
+				if (!valor) {
+					K id = (K)(Object)actual.getId();
+					dfs(id);
+				}
+			}
+			adyacentes.enqueue(actual);
+		}
+	}
 
-  /** Returns the edge from u to v, or null if they are not adjacent. */
-  Edge<E> getEdge(Vertex<V> u, Vertex<V> v) throws IllegalArgumentException;
+	/**
+	 * Returns the number of connected components in the graph {@code G}.
+	 *
+	 * @return the number of connected components in the graph {@code G}
+	 */
+	public int ccn() {
+		return count;
+	}
 
-  /**
-   * Returns the vertices of edge e as an array of length two.
-   * If the graph is directed, the first vertex is the origin, and
-   * the second is the destination.  If the graph is undirected, the
-   * order is arbitrary.
-   */
-  Vertex<V>[] endVertices(Edge<E> e) throws IllegalArgumentException;
+	public Val getInfoVertex(K idVertex) {
+		Vertex v1 = (Vertex)adj.get(idVertex);
+		Val infoV = (Val)v1.getInfo();
+		return infoV;
+	}
 
-  /** Returns the vertex that is opposite vertex v on edge e. */
-  Vertex<V> opposite(Vertex<V> v, Edge<E> e) throws IllegalArgumentException;
+	public void setInfoVertex(K idVertex, Val infoVertex) {
+		Vertex v1 =(Vertex)adj.get(idVertex);
+		v1.setInfo((Informacion)infoVertex);
 
-  /** Inserts and returns a new vertex with the given element. */
-  Vertex<V> insertVertex(V element);
+	}
 
-  /**
-   * Inserts and returns a new edge between vertices u and v, storing given element.
-   *
-   * @throws IllegalArgumentException if u or v are invalid vertices, or if an edge already exists between u and v.
-   */
-  Edge<E> insertEdge(Vertex<V> u, Vertex<V> v, E element) throws IllegalArgumentException;
+	public double getCostArc(K idVertexIni, K idVertexFin) {
+		double costo = -1;
+		Vertex vIn = (Vertex)adj.get(idVertexIni);
+		Queue<Edge> edges = vIn.getEdgeTos();
+		int tam = edges.size();
+		boolean encontrado = false;
+		for (int i = 0; i < tam && !encontrado; i++) {
+			Edge actual = edges.dequeue();
+			if (actual.getIdInicio() == (Integer)idVertexIni && actual.getIdFinal() == (Integer)idVertexFin) {
+				costo =  actual.getCosto();
+			}
+		}
+		return costo;
+	}
 
-  /** Removes a vertex and all its incident edges from the graph. */
-  void removeVertex(Vertex<V> v) throws IllegalArgumentException;
+	public void setCostArc(K idVertexIni, K idVertexFin, double cost) {
+		Vertex vIn = (Vertex)adj.get(idVertexIni);
+		Queue<Edge> arcos = vIn.getEdgeTos();
+		int tam = arcos.size();
+		boolean encontrado = false;
+		for (int i = 0; i < tam && !encontrado; i++) {
+			Edge actual = arcos.dequeue();
+			if (actual.getIdInicio() == (Integer)idVertexIni && actual.getIdFinal() == (Integer)idVertexFin) {
+				actual.setCostArc(cost);
+			}
+			arcos.enqueue(actual);
+		}
 
-  /** Removes an edge from the graph. */
-  void removeEdge(Edge<E> e) throws IllegalArgumentException;
+	}
+
+	public void uncheck() {
+		Iterator<K> marca = (Iterator<K>) marked.keys();
+		while (marca.hasNext()) {
+			K actual = marca.next();
+			marked.put(actual, false);
+		}
+	}
+
+	public Iterable<K> getCC(K idVertex) {
+		Queue<K> queue = new Queue<K>();
+		int ccID = cc.get(idVertex);
+		Iterator<K> ccs = (Iterator<K>) cc.keys();
+		while (ccs.hasNext()) {
+			K llave = ccs.next();
+			int valorAct = cc.get(llave);
+			if(valorAct == ccID){
+				queue.enqueue(llave);
+			}
+		}
+		return queue;
+	}
+	
+	public LinearProbingHashST<K, Boolean> marcados(){
+		return marked;
+	}
 }
