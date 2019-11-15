@@ -129,6 +129,8 @@ public class MVCModelo<K> {
 
 	public void cantidadComponentesConectados() {
 		// TODO Auto-generated method stub
+		grafo.CC();
+		//usa los metodos de cc y dfs juntos
 		System.out.println("Cantidad de componentes conexos: "+ grafo.ccn());
 		
 	}
