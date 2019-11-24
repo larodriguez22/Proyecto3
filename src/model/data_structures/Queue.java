@@ -160,6 +160,23 @@ public class Queue<Item> implements Iterable<Item> {
         }
     }
 
+
+    /**
+     * Unit tests the {@code Queue} data type.
+     *
+     * @param args the command-line arguments
+     */
+    public static void main(String[] args) {
+        Queue<String> queue = new Queue<String>();
+        while (!StdIn.isEmpty()) {
+            String item = StdIn.readString();
+            if (!item.equals("-"))
+                queue.enqueue(item);
+            else if (!queue.isEmpty())
+                StdOut.print(queue.dequeue() + " ");
+        }
+        StdOut.println("(" + queue.size() + " left on queue)");
+    }
 }
 
 /******************************************************************************
@@ -185,4 +202,3 @@ public class Queue<Item> implements Iterable<Item> {
  *  You should have received a copy of the GNU General Public License
  *  along with algs4.jar.  If not, see http://www.gnu.org/licenses.
  ******************************************************************************/
-

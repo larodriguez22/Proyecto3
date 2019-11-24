@@ -9,6 +9,7 @@ import java.io.PrintWriter;
 import java.io.Reader;
 import java.util.Arrays;
 
+import model.data_structures.Edge;
 import model.data_structures.Graph;
 import model.data_structures.Queue;
 import com.google.gson.Gson;

@@ -1,6 +1,7 @@
 package model.logic;
 import java.util.LinkedList;
 
+import model.data_structures.Edge;
 import model.data_structures.Queue;
 
 public class Vertex<I> implements Comparable<Vertex>

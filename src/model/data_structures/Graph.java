@@ -1,229 +1,227 @@
 package model.data_structures;
 
-import java.util.Iterator;
+import java.util.NoSuchElementException;
 
-import model.logic.Edge;
-import model.logic.Informacion;
-import model.logic.Vertex;
+/**
+ *  The {@code Graph} class represents an undirected graph of vertices
+ *  named 0 through <em>V</em> – 1.
+ *  It supports the following two primary operations: add an edge to the graph,
+ *  iterate over all of the vertices adjacent to a vertex. It also provides
+ *  methods for returning the number of vertices <em>V</em> and the number
+ *  of edges <em>E</em>. Parallel edges and self-loops are permitted.
+ *  By convention, a self-loop <em>v</em>-<em>v</em> appears in the
+ *  adjacency list of <em>v</em> twice and contributes two to the degree
+ *  of <em>v</em>.
+ *  <p>
+ *  This implementation uses an adjacency-lists representation, which 
+ *  is a vertex-indexed array of {@link Bag} objects.
+ *  All operations take constant time (in the worst case) except
+ *  iterating over the vertices adjacent to a given vertex, which takes
+ *  time proportional to the number of such vertices.
+ *  <p>
+ *  For additional documentation, see <a href="https://algs4.cs.princeton.edu/41graph">Section 4.1</a>
+ *  of <i>Algorithms, 4th Edition</i> by Robert Sedgewick and Kevin Wayne.
+ *
+ *  @author Robert Sedgewick
+ *  @author Kevin Wayne
+ */
+public class Graph {
+    private static final String NEWLINE = System.getProperty("line.separator");
 
-public class Graph <K extends Comparable<K>, Val> 
-{
-	//Codigo tomado de: https://github.com/kevin-wayne/algs4/blob/master/src/main/java/edu/princeton/cs/algs4/Graph.java
-	//					https://github.com/kevin-wayne/algs4/blob/master/src/main/java/edu/princeton/cs/algs4/DepthFirstPaths.java
-	//Copyright 2002-2018, Robert Sedgewick and Kevin Wayne.
+    private final int V;
+    private int E;
+    private Bag<Integer>[] adj;
+    
+    /**
+     * Initializes an empty graph with {@code V} vertices and 0 edges.
+     * param V the number of vertices
+     *
+     * @param  V number of vertices
+     * @throws IllegalArgumentException if {@code V < 0}
+     */
+    public Graph(int V) {
+        if (V < 0) throw new IllegalArgumentException("Number of vertices must be nonnegative");
+        this.V = V;
+        this.E = 0;
+        adj = (Bag<Integer>[]) new Bag[V];
+        for (int v = 0; v < V; v++) {
+            adj[v] = new Bag<Integer>();
+        }
+    }
 
-	private static final String NEWLINE = System.getProperty("line.separator");
-
-	private final int V;
-	private int E;
-	private LinearProbingHashST<K, Vertex> adj;
-	private LinearProbingHashST<K, Boolean> marked;
-	private LinearProbingHashST<K, Integer> cc;
-	private int[] id;           // id[v] = id of connected component containing v
-	private int[] size;         // size[id] = number of vertices in given component
-	private int count;          // number of connected components
-
-
-	/**
-	 * Initializes an empty graph with {@code V} vertices and 0 edges.
-	 * param V the number of vertices
-	 *
-	 * @param  V number of vertices
-	 * @throws IllegalArgumentException if {@code V < 0}
-	 */
-	public Graph(int V) {
-		this.V = V;
-		this.E = 0;
-		adj = new LinearProbingHashST<>(V);
-		marked = new LinearProbingHashST<>(V);
-		cc = new LinearProbingHashST<>(V);
-	}
-
-	/**
-	 * Returns the number of vertices in this graph.
-	 *
-	 * @return the number of vertices in this graph
-	 */
-	public int V() {
-		return V;
-	}
-
-	/**
-	 * Returns the number of edges in this graph.
-	 *
-	 * @return the number of edges in this graph
-	 */
-	public int E() {
-		return E;
-	}
-
-	/**
-	 * Adds the undirected edge v-w to this graph.
-	 *
-	 * @param  v one vertex in the edge
-	 * @param  w the other vertex in the edge
-	 * @throws IllegalArgumentException unless both {@code 0 <= v < V} and {@code 0 <= w < V}
-	 */
-	public void addEdge(K idVertexIni, K idVertexFin, double cost) {
-		E++;
-		Vertex v1 = (Vertex) adj.get(idVertexIni);
-		Vertex v2 = (Vertex) adj.get(idVertexFin);
-		String costoArco = String.valueOf(cost);
-		String idv1 = String.valueOf(idVertexIni);
-		String idv2 = String.valueOf(idVertexFin);
-		Edge edge = new Edge(idv1, idv2, costoArco);
-		v1.getAdj().enqueue(v2);
-		v2.getAdj().enqueue(v1);
-		v1.getEdgeTos().enqueue(edge);
-		v2.getEdgeTos().enqueue(edge);
-	}
+    /**  
+     * Initializes a graph from the specified input stream.
+     * The format is the number of vertices <em>V</em>,
+     * followed by the number of edges <em>E</em>,
+     * followed by <em>E</em> pairs of vertices, with each entry separated by whitespace.
+     *
+     * @param  in the input stream
+     * @throws IllegalArgumentException if the endpoints of any edge are not in prescribed range
+     * @throws IllegalArgumentException if the number of vertices or edges is negative
+     * @throws IllegalArgumentException if the input stream is in the wrong format
+     */
+    public Graph(In in) {
+        try {
+            this.V = in.readInt();
+            if (V < 0) throw new IllegalArgumentException("number of vertices in a Graph must be nonnegative");
+            adj = (Bag<Integer>[]) new Bag[V];
+            for (int v = 0; v < V; v++) {
+                adj[v] = new Bag<Integer>();
+            }
+            int E = in.readInt();
+            if (E < 0) throw new IllegalArgumentException("number of edges in a Graph must be nonnegative");
+            for (int i = 0; i < E; i++) {
+                int v = in.readInt();
+                int w = in.readInt();
+                validateVertex(v);
+                validateVertex(w);
+                addEdge(v, w); 
+            }
+        }
+        catch (NoSuchElementException e) {
+            throw new IllegalArgumentException("invalid input format in Graph constructor", e);
+        }
+    }
 
 
-	/**
-	 * 
-	 *
-	 * @param  v one vertex in the edge
-	 */
-	public void addVertex(K idVertex, Val infoVertex) {
-		String id = String.valueOf(idVertex);
-		Vertex nuevo = new Vertex((Informacion)infoVertex, Integer.parseInt(id));
-		adj.put(idVertex, nuevo);
-	}
+    /**
+     * Initializes a new graph that is a deep copy of {@code G}.
+     *
+     * @param  G the graph to copy
+     */
+    public Graph(Graph G) {
+        this(G.V());
+        this.E = G.E();
+        for (int v = 0; v < G.V(); v++) {
+            // reverse so that adjacency list is in same order as original
+            Stack<Integer> reverse = new Stack<Integer>();
+            for (int w : G.adj[v]) {
+                reverse.push(w);
+            }
+            for (int w : reverse) {
+                adj[v].add(w);
+            }
+        }
+    }
 
-	/**
-	 * Returns the vertices adjacent to vertex {@code v}.
-	 *
-	 * @param  v the vertex
-	 * @return the vertices adjacent to vertex {@code v}, as an iterable
-	 * @throws IllegalArgumentException unless {@code 0 <= v < V}
-	 */
-	public Iterable<K> adj(K idVertex) {
-		Queue<K> ids = new Queue<K>();
-		Vertex aux = (Vertex)adj.get(idVertex);
-		Queue<Vertex> adyacentes = aux.getAdj();
-		int tam = adyacentes.size();
-		for (int i = 0; i < tam; i++) {
-			Vertex actual = adyacentes.dequeue();
-			K idAct = (K)(Object)actual.getId();
-			ids.enqueue(idAct);
-			adyacentes.enqueue(actual);
-		}
-		Queue<K> adya = (Queue<K>) ids.iterator();
-		return adya;
-	}
+    /**
+     * Returns the number of vertices in this graph.
+     *
+     * @return the number of vertices in this graph
+     */
+    public int V() {
+        return V;
+    }
 
-	/**
-	 * Computes the connected components of the undirected graph {@code G}.
-	 *
-	 * @param G the undirected graph
-	 */
-	public void CC() {
-		Iterator<K> marcados = (Iterator<K>) marked.keys();
-		while(marcados.hasNext()) {
-			K llave = marcados.next();
-			boolean valor = (boolean)marked.get(llave);
-			if (!valor) {
-				dfs(llave);
-				count++;	
-			}
-		}
-	}
+    /**
+     * Returns the number of edges in this graph.
+     *
+     * @return the number of edges in this graph
+     */
+    public int E() {
+        return E;
+    }
 
-	public void dfs(K v) {
-		marked.put(v, true);
-		Vertex vAct = (Vertex) adj.get(v);
-		Queue<Vertex> adyacentes = vAct.getAdj();
-		int tam = adyacentes.size();
-		for (int i = 0; i < tam; i++) {
-			Vertex actual = adyacentes.dequeue();
-			if (marked.get((K) actual) == null) {
-				marked.put((K) actual, true);
-			}
-			else {
-				boolean valor = marked.get((K) actual);
-				if (!valor) {
-					K id = (K)(Object)actual.getId();
-					dfs(id);
-				}
-			}
-			adyacentes.enqueue(actual);
-		}
-	}
+    // throw an IllegalArgumentException unless {@code 0 <= v < V}
+    private void validateVertex(int v) {
+        if (v < 0 || v >= V)
+            throw new IllegalArgumentException("vertex " + v + " is not between 0 and " + (V-1));
+    }
 
-	/**
-	 * Returns the number of connected components in the graph {@code G}.
-	 *
-	 * @return the number of connected components in the graph {@code G}
-	 */
-	public int ccn() {
-		return count;
-	}
+    /**
+     * Adds the undirected edge v-w to this graph.
+     *
+     * @param  v one vertex in the edge
+     * @param  w the other vertex in the edge
+     * @throws IllegalArgumentException unless both {@code 0 <= v < V} and {@code 0 <= w < V}
+     */
+    public void addEdge(int v, int w) {
+        validateVertex(v);
+        validateVertex(w);
+        E++;
+        adj[v].add(w);
+        adj[w].add(v);
+    }
 
-	public Val getInfoVertex(K idVertex) {
-		Vertex v1 = (Vertex)adj.get(idVertex);
-		Val infoV = (Val)v1.getInfo();
-		return infoV;
-	}
 
-	public void setInfoVertex(K idVertex, Val infoVertex) {
-		Vertex v1 =(Vertex)adj.get(idVertex);
-		v1.setInfo((Informacion)infoVertex);
+    /**
+     * Returns the vertices adjacent to vertex {@code v}.
+     *
+     * @param  v the vertex
+     * @return the vertices adjacent to vertex {@code v}, as an iterable
+     * @throws IllegalArgumentException unless {@code 0 <= v < V}
+     */
+    public Iterable<Integer> adj(int v) {
+        validateVertex(v);
+        return adj[v];
+    }
 
-	}
+    /**
+     * Returns the degree of vertex {@code v}.
+     *
+     * @param  v the vertex
+     * @return the degree of vertex {@code v}
+     * @throws IllegalArgumentException unless {@code 0 <= v < V}
+     */
+    public int degree(int v) {
+        validateVertex(v);
+        return adj[v].size();
+    }
 
-	public double getCostArc(K idVertexIni, K idVertexFin) {
-		double costo = -1;
-		Vertex vIn = (Vertex)adj.get(idVertexIni);
-		Queue<Edge> edges = vIn.getEdgeTos();
-		int tam = edges.size();
-		boolean encontrado = false;
-		for (int i = 0; i < tam && !encontrado; i++) {
-			Edge actual = edges.dequeue();
-			if (actual.getIdInicio() == (Integer)idVertexIni && actual.getIdFinal() == (Integer)idVertexFin) {
-				costo =  actual.getCosto();
-			}
-		}
-		return costo;
-	}
 
-	public void setCostArc(K idVertexIni, K idVertexFin, double cost) {
-		Vertex vIn = (Vertex)adj.get(idVertexIni);
-		Queue<Edge> arcos = vIn.getEdgeTos();
-		int tam = arcos.size();
-		boolean encontrado = false;
-		for (int i = 0; i < tam && !encontrado; i++) {
-			Edge actual = arcos.dequeue();
-			if (actual.getIdInicio() == (Integer)idVertexIni && actual.getIdFinal() == (Integer)idVertexFin) {
-				actual.setCostArc(cost);
-			}
-			arcos.enqueue(actual);
-		}
+    /**
+     * Returns a string representation of this graph.
+     *
+     * @return the number of vertices <em>V</em>, followed by the number of edges <em>E</em>,
+     *         followed by the <em>V</em> adjacency lists
+     */
+    public String toString() {
+        StringBuilder s = new StringBuilder();
+        s.append(V + " vertices, " + E + " edges " + NEWLINE);
+        for (int v = 0; v < V; v++) {
+            s.append(v + ": ");
+            for (int w : adj[v]) {
+                s.append(w + " ");
+            }
+            s.append(NEWLINE);
+        }
+        return s.toString();
+    }
 
-	}
 
-	public void uncheck() {
-		Iterator<K> marca = (Iterator<K>) marked.keys();
-		while (marca.hasNext()) {
-			K actual = marca.next();
-			marked.put(actual, false);
-		}
-	}
+    /**
+     * Unit tests the {@code Graph} data type.
+     *
+     * @param args the command-line arguments
+     */
+    public static void main(String[] args) {
+        In in = new In(args[0]);
+        Graph G = new Graph(in);
+        StdOut.println(G);
+    }
 
-	public Iterable<K> getCC(K idVertex) {
-		Queue<K> queue = new Queue<K>();
-		int ccID = cc.get(idVertex);
-		Iterator<K> ccs = (Iterator<K>) cc.keys();
-		while (ccs.hasNext()) {
-			K llave = ccs.next();
-			int valorAct = cc.get(llave);
-			if(valorAct == ccID){
-				queue.enqueue(llave);
-			}
-		}
-		return queue;
-	}
-	
-	public LinearProbingHashST<K, Boolean> marcados(){
-		return marked;
-	}
 }
+
+/******************************************************************************
+ *  Copyright 2002-2018, Robert Sedgewick and Kevin Wayne.
+ *
+ *  This file is part of algs4.jar, which accompanies the textbook
+ *
+ *      Algorithms, 4th edition by Robert Sedgewick and Kevin Wayne,
+ *      Addison-Wesley Professional, 2011, ISBN 0-321-57351-X.
+ *      http://algs4.cs.princeton.edu
+ *
+ *
+ *  algs4.jar is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  algs4.jar is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with algs4.jar.  If not, see http://www.gnu.org/licenses.
+ ******************************************************************************/
