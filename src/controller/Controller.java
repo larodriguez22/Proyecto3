@@ -60,8 +60,18 @@ public class Controller {
 				dato = lector.next();
 				modelo.crearJson();		
 				break;
-
+				
 			case 3: 
+				System.out.println("--------- \n Cargar HTML \n---------"); 
+				try {
+					modelo.hacerHTML();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;	
+
+			case 4: 
 				System.out.println("--------- \n Hasta pronto !! \n---------"); 
 				lector.close();
 				fin = true;
