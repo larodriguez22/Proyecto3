@@ -4,64 +4,93 @@ import java.util.LinkedList;
 import model.data_structures.Edge;
 import model.data_structures.Queue;
 
-public class Vertex<I> implements Comparable<Vertex>
-{
-	private Queue<Edge> edgeTo;
-	private Informacion info;
-	private boolean marked;
-	private int id;
-	private Queue<Vertex> adj = new Queue<Vertex>(); 
+public class Vertex<K, V> {
 
-	public Vertex(Informacion info, int id)
+	private K id;
+	private int CanArcos;
+	private boolean check;
+	private V info;
+	private Vertex<K, V> conectado;
+	private Edge[] arcos;
+
+	public Vertex(K pid, V pinfo,Edge[] parcos)
 	{
-		this.info = info;
-		marked = false;
-		this.id = id;
-	}
-	
-	public Queue<Vertex> getAdj(){
-		return adj;
-	}
-	
-	public Queue<Edge> getEdgeTos(){
-		return edgeTo;
-	}
-	
-	public String toString() {
-		return "Vertice [id=" + id + ", longitud=" + info.getLon() + ", latitud=" + info.getLat()+ ", MOVEMENT_ID=" + info.getMovementID() + "]";
+		id = pid;
+		info = pinfo;
+		arcos = parcos;
 	}
 
-	@Override
-	public int compareTo(Vertex o) {
-		// TODO Auto-generated method stub
-		return 0;
+	public int darCantidadArcos()
+	{
+		if(arcos == null)
+		{
+			return 0;
+		}
+		return CanArcos;
 	}
-	
-	public Informacion getInfo()
+
+	public Edge[] darArcos()
+	{
+		return arcos;
+	}
+
+	public void agregarArco(Edge i)
+	{
+		if(arcos == null)
+		{
+			arcos[0] = i;
+			CanArcos++;
+		}
+		else
+		{
+			for(int j = 1; j<6 ; j++)
+			{
+				if(arcos[j] == null)
+				{
+					arcos[j] = i;
+				}
+			}
+			CanArcos++;
+		}
+	}
+
+	public K darId()
+	{
+		return id;
+	}
+
+	public void cambiarInformacion(V newInfo)
+	{
+		info = newInfo;
+	}
+
+	public void marcar()
+	{
+		check = true;
+	}
+
+	public void desmarcar()
+	{
+		check = false;
+	}
+
+	public V darInfo()
 	{
 		return info;
 	}
 
-	public void setInfo(Informacion pInfo)
+	public boolean estaMarcado()
 	{
-		info = pInfo;
+		return check;
 	}
 
-	public void desmarked()
+	public void conectadoA(Vertex a)
 	{
-		marked = false;
+		conectado = a;
 	}
-	public void marked()
+
+	public Vertex darConexion()
 	{
-		marked = true;
-	}
-	public boolean isMarked()
-	{
-		return marked;
-	}
-	
-	public int getId()
-	{
-		return id;
+		return conectado;
 	}
 }

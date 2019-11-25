@@ -1,8 +1,10 @@
 package model.data_structures;
 
+import model.logic.Vertex;
 
 public class Grafo<K, IV> {
 	
+	private Vertex<K,IV>[] vertices;
 	private EdgeWeightedGraph g;
 	private LinearProbingHashST<K, Integer> keyToInteger;
 	private LinearProbingHashST<Integer, K> integerToKey;
@@ -30,6 +32,18 @@ public class Grafo<K, IV> {
 	public Edge addEdge(K idVertexIni, K idVertexFin, double cost) {		
 		Edge e = new Edge(keyToInteger.get(idVertexIni), keyToInteger.get(idVertexFin), cost);
 		g.addEdge(e);
+		for(Vertex inter : vertices)
+		{
+			if(inter != null)
+			{
+				if(inter.darId() == idVertexIni)
+				{
+					int id = (int) idVertexFin;
+					Edge arc = new Edge((int)idVertexIni, (int)idVertexFin, cost);
+					inter.agregarArco(arc);
+				}
+			}
+		}
 		return e;
 	}
 
@@ -98,6 +112,10 @@ public class Grafo<K, IV> {
 			}
 		}
 		return res;
+	}
+	public Vertex[] darVertices()
+	{
+		return vertices;
 	}
 
 }

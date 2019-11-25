@@ -206,4 +206,92 @@ public class MVCModelo<K> {
 		return rta/contador;
 	}
 	
+	public void hacerHTML() throws IOException
+	{
+		String ruta = "./data/mapa.html";
+		int contador = 0;
+		PrintWriter writer = null;
+		try
+		{
+			writer = new PrintWriter(ruta);
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		writer.println("<!DOCTYPE html>");
+		writer.println("<html>");
+		writer.println("<head>");
+		writer.println("<meta name=\"viewport\" content=\"initial-scale=1.0, user-scalable=no\">");
+		writer.println("<meta charset=\"utf-8\">");
+		writer.println("<title>Simple Polylines</title>");
+		writer.println("<style>");
+		writer.println("#map {");
+		writer.println("height: 100%;");
+		writer.println("}");
+		writer.println("html,");
+		writer.println("body {");
+		writer.println("height: 100%;");
+		writer.println("margin: 0;");
+		writer.println("padding: 0;");
+		writer.println("}");
+		writer.println("</style>");
+		writer.println("</head>");
+		writer.println("<body>");
+		writer.println("<div id=\"map\"></div>");
+		writer.println("<script>");
+		writer.println("function initMap() {");
+		writer.println("var map = new google.maps.Map(document.getElementById('map'), {");
+		writer.println("zoom: 5,");
+		writer.println("center: {");
+		writer.println("lat: 40.162838,");
+		writer.println("lng: -3.494526");
+		writer.println("},");
+		writer.println("mapTypeId: 'roadmap'");
+		writer.println("});");
+		writer.println("var line;");
+		writer.println("var path;");
+		for(Vertex<Integer,Informacion> inter: grafo.darVertices())
+		{
+			if(inter != null)
+			{
+				for(Edge arcos : inter.darArcos())
+				{
+					if(arcos != null)
+					{
+						Informacion llegada = grafo.getInfoVertex(arcos.other(0));
+						if(llegada != null)
+						{
+							Informacion info = (Informacion) inter.darInfo();
+							writer.println("line = [");
+							writer.println("{");
+							writer.println("lat: " + info.getLat() + ",");
+							writer.println("lng: " + info.getLon());
+							writer.println("},");
+							writer.println("{");
+							writer.println("lat: " + llegada.getLat()+ ",");
+							writer.println("lng: " + llegada.getLon());
+							writer.println("}");
+							writer.println("];");
+							writer.println("path = new google.maps.Polyline({");
+							writer.println("path: line,");
+							writer.println("strokeColor: '#FF0000',");
+							writer.println("strokeWeight: 2");
+							writer.println("});");
+							writer.println("path.setMap(map);");
+							contador++;
+							System.out.println(contador);
+						}
+					}
+				}
+			}
+		}
+		writer.println("}");
+		writer.println("</script>");
+		writer.println("<script async defer src=\"https://maps.googleapis.com/maps/api/js?key=&callback=initMap\">");
+		writer.println("</script>");
+		writer.println("</body>");
+		writer.println("</html>");
+		writer.close();
+
+	}
+	
 }
