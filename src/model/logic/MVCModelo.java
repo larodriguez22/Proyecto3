@@ -157,8 +157,10 @@ public class MVCModelo<K> {
 		try {
 			reader = new JsonReader(new FileReader(path));
 			grafo = gson.fromJson(reader, Informacion.class);
+			System.out.println("numero Vertices:" +grafo.V());
+			System.out.println("numero Arcos:" +grafo.E());
+			System.out.println("Cantidad CC:" +grafo.cc());
 			
-
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

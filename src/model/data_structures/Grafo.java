@@ -100,4 +100,14 @@ public class Grafo<K, IV> {
 		return res;
 	}
 
+	public void setArc(int llave3, int llave4) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public int getCostArc(int llave1, int llave2) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
 }
