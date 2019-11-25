@@ -2,16 +2,14 @@ package model.logic;
 
 public class Viaje implements Comparable<Viaje>
 {
-	private double trimestre;
 	private double sourceid;
 	private double dstid;
 	private double info;
 	private double mean_travel_time;
 	private double standard_deviation_travel_time;
 	
-	public Viaje(int _trimestre, String _sourceid, String _dstid, String _info, String _mean_travel_time, String _standard_deviation_travel_time)
+	public Viaje(String _sourceid, String _dstid, String _info, String _mean_travel_time, String _standard_deviation_travel_time)
 	{
-		setTrimestre(_trimestre);
 		setSourceid(Double.parseDouble(_sourceid));
 		setDstid(Double.parseDouble(_dstid));
 		setInfo(Double.parseDouble(_info));
@@ -57,14 +55,6 @@ public class Viaje implements Comparable<Viaje>
 
 	public void setStandard_deviation_travel_time(double standard_deviation_travel_time) {
 		this.standard_deviation_travel_time = standard_deviation_travel_time;
-	}
-
-	public double getTrimestre() {
-		return trimestre;
-	}
-
-	public void setTrimestre(double trimestre) {
-		this.trimestre = trimestre;
 	}
 
 	@Override

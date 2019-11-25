@@ -58,21 +58,10 @@ public class Controller {
 			case 2:
 				System.out.println("--------- \nEsquema JSON para persistir el grafo: ");
 				dato = lector.next();
-				modelo.crearJson();
-
+				modelo.crearJson();		
 				break;
 
-			case 3:
-				System.out.println("--------- \nCantidad de componentes conectados en el grafo: ");
-				modelo.cantidadComponentesConectados();					
-				break;
-
-			case 4:
-				System.out.println("--------- \nGrafica con ayuda de Google Maps: ");
-				modelo.graficaGoogleMaps();			
-				break;
-
-			case 5: 
+			case 3: 
 				System.out.println("--------- \n Hasta pronto !! \n---------"); 
 				lector.close();
 				fin = true;

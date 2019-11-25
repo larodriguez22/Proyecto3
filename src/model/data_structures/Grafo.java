@@ -27,9 +27,10 @@ public class Grafo<K, IV> {
 		return g.E();
 	}
 	
-	public void addEdge(K idVertexIni, K idVertexFin, double cost) {		
+	public Edge addEdge(K idVertexIni, K idVertexFin, double cost) {		
 		Edge e = new Edge(keyToInteger.get(idVertexIni), keyToInteger.get(idVertexFin), cost);
 		g.addEdge(e);
+		return e;
 	}
 
 	public void addVertex(K idVertex, IV infoV) {

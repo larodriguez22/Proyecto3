@@ -8,15 +8,19 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Reader;
 import java.util.Arrays;
+import java.util.Iterator;
 
 import model.data_structures.Edge;
 import model.data_structures.Grafo;
 import model.data_structures.Graph;
 import model.data_structures.Haversine;
 import model.data_structures.Queue;
+import model.data_structures.SeparateChainingHashST;
+
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
+import com.opencsv.CSVReader;
 
 
 /**
@@ -26,19 +30,45 @@ import com.google.gson.stream.JsonToken;
 
 public class MVCModelo<K> {
 
+	private SeparateChainingHashST<String, Viaje> viajes;
 	private Grafo<Integer, Informacion> grafo;
-
-	private Vertex vertices;
-	private Edge arcos;
-	private Informacion infos;
-
-	private Queue<Integer> ids = new Queue<>();
-	private Queue<String> values = new Queue<>();
 
 	public MVCModelo() throws Exception
 	{
-		ids=new Queue<>();
-		values=new Queue<>();
+		viajes= new SeparateChainingHashST<>(1000000);
+	}
+	public void cargar(){
+		try {
+			cargarTxtHash();
+			
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		try {
+			cargarViajes();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public void cargarViajes() throws Exception
+	{
+		int contador = 0;
+		String rutaViaje = "data/bogota-cadastral-2018-1-WeeklyAggregate.csv";
+		CSVReader lector = new CSVReader(new FileReader(rutaViaje));
+		String [] partes;
+		while ((partes = lector.readNext()) != null) 
+		{
+			if(contador!=0)
+			{
+				Viaje viajeNuevo = new Viaje(partes[0], partes[1], partes[2], partes[3], partes[4]);
+				viajes.put(partes[0]+"-"+partes[1], viajeNuevo);
+			}
+			contador++;
+		}
+		lector.close();
 	}
 
 	public void cargarTxtHash() throws IOException
@@ -70,7 +100,7 @@ public class MVCModelo<K> {
 		}
 		try{
 			// Abre el archivo utilizando un FileReader
-			FileReader reader = new FileReader(rutaV);
+			FileReader reader = new FileReader(rutaE);
 			// Utiliza un BufferedReader para leer por líneas
 			BufferedReader lector = new BufferedReader( reader );   
 			// Lee línea por línea del archivo
@@ -86,7 +116,13 @@ public class MVCModelo<K> {
 					Informacion infoInicial= grafo.getInfoVertex(Integer.parseInt(partes[0]));
 					Informacion infoFinal=grafo.getInfoVertex(Integer.parseInt(partes[i]));
 					double cost=Haversine.distance(infoInicial.getLat(), infoInicial.getLon(), infoFinal.getLat(), infoFinal.getLon());
-					grafo.addEdge(Integer.parseInt(partes[0]), Integer.parseInt(partes[i]), cost);
+					Edge e=grafo.addEdge(Integer.parseInt(partes[0]), Integer.parseInt(partes[i]), cost);
+					int moveID1=grafo.getInfoVertex(Integer.parseInt(partes[0])).getMovementID();
+					int moveID2=grafo.getInfoVertex(Integer.parseInt(partes[i])).getMovementID();
+					double costo2=calcularCosto2(moveID1, moveID2);
+					e.setWeight2(costo2);
+					double costo3=cost/costo2;
+					e.setWeight3(costo3);
 				}
 				linea=lector.readLine();
 			}
@@ -130,17 +166,44 @@ public class MVCModelo<K> {
 
 	}
 	
-
-	public void cantidadComponentesConectados() {
-		// TODO Auto-generated method stub
-		grafo.CC();
-		//usa los metodos de cc y dfs juntos
-		System.out.println("Cantidad de componentes conexos: "+ grafo.ccn());
-		
+	public double calcularCosto2(int pMovementIdInicio, int pMovementIdFinal)
+	{
+		double rta = 0.0;
+		if(pMovementIdInicio==pMovementIdFinal)
+		{
+			rta = calcularTiempoPromedioEntreZonas(pMovementIdInicio+"", pMovementIdFinal+"");
+			if(rta == 0.0)
+			{
+				rta = 10;
+			}
+		}
+		else
+		{
+			rta = calcularTiempoPromedioEntreZonas(pMovementIdInicio+"", pMovementIdFinal+"");
+			if(rta == 0.0)
+			{
+				rta = 100;
+			}
+		}
+		return rta;
 	}
-
-	public void graficaGoogleMaps() {
-		// TODO Auto-generated method stub
-		
+	
+	public double calcularTiempoPromedioEntreZonas(String pIdZona1, String pIdZona2)
+	{ 
+		double rta = 0.0;
+		int contador = 0;
+		Iterator iter = (Iterator) viajes;
+		while(iter.hasNext())
+		{
+			Viaje actual = (Viaje)iter.next();
+			rta+=actual.getMean_travel_time();
+			contador++;
+		}
+		if(contador<=0)
+		{
+			return 0.0;
+		}
+		return rta/contador;
 	}
+	
 }
