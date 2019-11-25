@@ -10,7 +10,9 @@ import java.io.Reader;
 import java.util.Arrays;
 
 import model.data_structures.Edge;
+import model.data_structures.Grafo;
 import model.data_structures.Graph;
+import model.data_structures.Haversine;
 import model.data_structures.Queue;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
@@ -24,7 +26,7 @@ import com.google.gson.stream.JsonToken;
 
 public class MVCModelo<K> {
 
-	private Graph<Integer,Informacion> grafo;
+	private Grafo<Integer, Informacion> grafo;
 
 	private Vertex vertices;
 	private Edge arcos;
@@ -41,13 +43,11 @@ public class MVCModelo<K> {
 
 	public void cargarTxtHash() throws IOException
 	{
-		int _arcos=0;
-		int _vertices=0;
 		String rutaE="./data/bogota_arcos.txt";
 		String rutaV="./data/bogota_vertices.txt";
 		try{
 			// Abre el archivo utilizando un FileReader
-			FileReader reader = new FileReader(rutaE);
+			FileReader reader = new FileReader(rutaV);
 			// Utiliza un BufferedReader para leer por líneas
 			BufferedReader lector = new BufferedReader( reader );   
 			// Lee línea por línea del archivo
@@ -55,13 +55,10 @@ public class MVCModelo<K> {
 			while(linea!=null)
 			{
 				// Parte la línea con cada coma
-				String[] partes = linea.split( " " );
-				for (int i = 1; i<partes.length;i++) {
-					System.out.println(Arrays.toString(partes));
-					arcos = new Edge(linea,partes[i],"0");
-					System.out.println(arcos.toString());
-				}
-				_arcos++;
+				//id;long;lat;MOVEMENT_ID
+				String[] partes = linea.split( ";" );
+				Informacion inf= new Informacion(Integer.parseInt(partes[0]), Double.parseDouble(partes[1]), Double.parseDouble(partes[2]), Integer.parseInt(partes[3]));
+				grafo.addVertex(Integer.parseInt(partes[0]), inf);
 				linea=lector.readLine();
 			}
 			lector.close( );
@@ -78,13 +75,19 @@ public class MVCModelo<K> {
 			BufferedReader lector = new BufferedReader( reader );   
 			// Lee línea por línea del archivo
 			String linea = lector.readLine( );
+			
+			
 			while(linea!=null)
 			{
 				// Parte la línea con cada coma
 				String[] partes = linea.split( " " );
-				infos = new Informacion(Double.parseDouble(partes[1]), Double.parseDouble(partes[2]), Integer.parseInt(partes[3]));
-				vertices = new Vertex(infos, Integer.parseInt(partes[0]));
-				_vertices++;
+								
+				for (int i = 1; i<partes.length;i++) {
+					Informacion infoInicial= grafo.getInfoVertex(Integer.parseInt(partes[0]));
+					Informacion infoFinal=grafo.getInfoVertex(Integer.parseInt(partes[i]));
+					double cost=Haversine.distance(infoInicial.getLat(), infoInicial.getLon(), infoFinal.getLat(), infoFinal.getLon());
+					grafo.addEdge(Integer.parseInt(partes[0]), Integer.parseInt(partes[i]), cost);
+				}
 				linea=lector.readLine();
 			}
 			lector.close( );
@@ -94,8 +97,8 @@ public class MVCModelo<K> {
 			// TODO: handle exception
 			e.printStackTrace();
 		}
-		System.out.println("La cantidad total de arcos es "+_arcos);
-		System.out.println("La cantidad total de vertices es "+_vertices);
+		System.out.println("La cantidad total de arcos es "+ grafo.E());
+		System.out.println("La cantidad total de vertices es "+grafo.V());
 		// Cierra los lectores y devuelve el resultado
 	}
 

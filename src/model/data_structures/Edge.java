@@ -28,7 +28,12 @@ public class Edge implements Comparable<Edge> {
 
     private final int v;
     private final int w;
-    private final double weight;
+    //DISTANCIA HARVESINE
+    private final double weight1;
+    //TIEMPO PROMEDIO
+    private double weight2;
+  //VELOCIDAD DEL ARCCO
+    private double weight3;
 
     /**
      * Initializes an edge between vertices {@code v} and {@code w} of
@@ -41,22 +46,22 @@ public class Edge implements Comparable<Edge> {
      *         is a negative integer
      * @throws IllegalArgumentException if {@code weight} is {@code NaN}
      */
-    public Edge(int v, int w, double weight) {
+    public Edge(int v, int w, double weight1) {
         if (v < 0) throw new IllegalArgumentException("vertex index must be a nonnegative integer");
         if (w < 0) throw new IllegalArgumentException("vertex index must be a nonnegative integer");
-        if (Double.isNaN(weight)) throw new IllegalArgumentException("Weight is NaN");
+        if (Double.isNaN(weight1)) throw new IllegalArgumentException("Weight is NaN");
         this.v = v;
         this.w = w;
-        this.weight = weight;
+        this.weight1 = weight1;
     }
 
     /**
      * Returns the weight of this edge.
-     *
+     *DIATANCIA HARVESINE
      * @return the weight of this edge
      */
-    public double weight() {
-        return weight;
+    public double weightHarvesineDistance() {
+        return weight1;
     }
 
     /**
@@ -91,10 +96,12 @@ public class Edge implements Comparable<Edge> {
      * @return a negative integer, zero, or positive integer depending on whether
      *         the weight of this is less than, equal to, or greater than the
      *         argument edge
+     *         
+     *         COMPARA POR LA DISTANCIA HARVESINE
      */
     @Override
     public int compareTo(Edge that) {
-        return Double.compare(this.weight, that.weight);
+        return Double.compare(this.weight1, that.weight1);
     }
 
     /**
@@ -103,18 +110,34 @@ public class Edge implements Comparable<Edge> {
      * @return a string representation of this edge
      */
     public String toString() {
-        return String.format("%d-%d %.5f", v, w, weight);
+        return String.format("%d-%d %.5f", v, w, weight1);
+    }
+    
+    /**
+     * Returns the weight of this edge.
+     *TIEMPO PROMEDIO
+     * @return the weight of this edge
+     */
+    public double weightTiempoPromedio() {
+        return weight2;
+    }
+    
+    /**
+     * Returns the weight of this edge.
+     *VELOCIDAD DEL ARCO
+     * @return the weight of this edge
+     */
+    public double weightVelocidadDelArco() {
+        return weight3;
     }
 
-    /**
-     * Unit tests the {@code Edge} data type.
-     *
-     * @param args the command-line arguments
-     */
-    public static void main(String[] args) {
-        Edge e = new Edge(12, 34, 5.67);
-        StdOut.println(e);
-    }
+	public void setWeight2(Double weight) {
+		weight2=weight;
+	}
+	
+	public void setWeight3(Double weight) {
+		weight3=weight;
+	}
 }
 
 /******************************************************************************

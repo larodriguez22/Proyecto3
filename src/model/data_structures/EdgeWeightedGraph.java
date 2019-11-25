@@ -249,17 +249,6 @@ public class EdgeWeightedGraph {
         return s.toString();
     }
 
-    /**
-     * Unit tests the {@code EdgeWeightedGraph} data type.
-     *
-     * @param args the command-line arguments
-     */
-    public static void main(String[] args) {
-        In in = new In(args[0]);
-        EdgeWeightedGraph G = new EdgeWeightedGraph(in);
-        StdOut.println(G);
-    }
-
 }
 
 /******************************************************************************

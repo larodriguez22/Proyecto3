@@ -1,15 +1,17 @@
 package model.logic;
 
 public class Informacion {
+	private int id;
 	private double lat;
 	private double lon;
 	private int MOVEMENT_ID;
 
-	public Informacion(double plat, double plon, int pmove)
+	public Informacion(int pId, double pLat, double pLon, int pMove)
 	{
-		lat = plat;
-		lon = plon;
-		MOVEMENT_ID=pmove;
+		id=pId;
+		lat = pLat;
+		lon = pLon;
+		MOVEMENT_ID=pMove;
 	}
 
 	public double getLat()
