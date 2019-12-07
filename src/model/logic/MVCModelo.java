@@ -295,5 +295,46 @@ public class MVCModelo<K> {
 		writer.close();
 
 	}
+	public void darVerticeMasCercano(double latitud, double longitud) {
+		// TODO Auto-generated method stub
+		
+	}
+	public void encontrarCaminoMenorTiempoPromedio(double latitudO, double longitudO, double latitudD,
+			double longitudD) {
+		// TODO Auto-generated method stub
+		
+	}
+	public void nVerticesMenorVelocidadPromedio(int n) {
+		// TODO Auto-generated method stub
+		
+	}
+	public void calcularMSTPrim() {
+		// TODO Auto-generated method stub
+		
+	}
+	public void caminoMenorCostoHaversine(double latitudO, double longitudO, double latitudD, double longitudD) {
+		// TODO Auto-generated method stub
+		
+	}
+	public void indicarVerticesAlcanzablesTiempoT(double latitud, double longitud, Double tiempo) {
+		// TODO Auto-generated method stub
+		
+	}
+	public void calcularMSTKruskal() {
+		// TODO Auto-generated method stub
+		
+	}
+	public void construirNuevoGrafo() {
+		// TODO Auto-generated method stub
+		
+	}
+	public void calcularDijkstra() {
+		// TODO Auto-generated method stub
+		
+	}
+	public void caminoMenorLongituDesdeLaZona(double latitudO, double longitudO) {
+		// TODO Auto-generated method stub
+		
+	}
 	
 }
