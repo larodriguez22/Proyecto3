@@ -7,15 +7,19 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Reader;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 
+import model.data_structures.DepthFirstPaths;
 import model.data_structures.Edge;
 import model.data_structures.Grafo;
 import model.data_structures.Graph;
 import model.data_structures.Haversine;
+import model.data_structures.LazyPrimMST;
 import model.data_structures.Queue;
 import model.data_structures.SeparateChainingHashST;
+import model.data_structures.StdOut;
 
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
@@ -40,7 +44,7 @@ public class MVCModelo<K> {
 	public void cargar(){
 		try {
 			cargarTxtHash();
-			
+
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -52,7 +56,7 @@ public class MVCModelo<K> {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public void cargarViajes() throws Exception
 	{
 		int contador = 0;
@@ -105,13 +109,13 @@ public class MVCModelo<K> {
 			BufferedReader lector = new BufferedReader( reader );   
 			// Lee línea por línea del archivo
 			String linea = lector.readLine( );
-			
-			
+
+
 			while(linea!=null)
 			{
 				// Parte la línea con cada coma
 				String[] partes = linea.split( " " );
-								
+
 				for (int i = 1; i<partes.length;i++) {
 					Informacion infoInicial= grafo.getInfoVertex(Integer.parseInt(partes[0]));
 					Informacion infoFinal=grafo.getInfoVertex(Integer.parseInt(partes[i]));
@@ -141,15 +145,15 @@ public class MVCModelo<K> {
 	public void crearJson() {
 		// TODO Auto-generated method stub
 
-        Gson gson = new Gson();
-        // Java objects to File
-        try (FileWriter writer = new FileWriter("./data/data.json")) {
-            gson.toJson(grafo, writer);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+		Gson gson = new Gson();
+		// Java objects to File
+		try (FileWriter writer = new FileWriter("./data/data.json")) {
+			gson.toJson(grafo, writer);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 
-    }
+	}
 	public void leerJson(){
 		Gson gson = new Gson();
 		String path = "./data/data.json";
@@ -160,14 +164,14 @@ public class MVCModelo<K> {
 			System.out.println("numero Vertices:" +grafo.V());
 			System.out.println("numero Arcos:" +grafo.E());
 			System.out.println("Cantidad CC:" +grafo.cc());
-			
+
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
 	}
-	
+
 	public double calcularCosto2(int pMovementIdInicio, int pMovementIdFinal)
 	{
 		double rta = 0.0;
@@ -189,7 +193,7 @@ public class MVCModelo<K> {
 		}
 		return rta;
 	}
-	
+
 	public double calcularTiempoPromedioEntreZonas(String pIdZona1, String pIdZona2)
 	{ 
 		double rta = 0.0;
@@ -207,7 +211,7 @@ public class MVCModelo<K> {
 		}
 		return rta/contador;
 	}
-	
+
 	public void hacerHTML() throws IOException
 	{
 		String ruta = "./data/mapa.html";
@@ -295,30 +299,138 @@ public class MVCModelo<K> {
 		writer.close();
 
 	}
-	public void darVerticeMasCercano(double latitud, double longitud) {
+	public int darVerticeMasCercano(double latitud, double longitud) {
 		// TODO Auto-generated method stub
+		double distanciaFinal=0;
+		int idVertice=-1;
+		for(int i=0; i<grafo.V();i++)
+		{
+			double distanciaActual=Haversine.distance(latitud, longitud, grafo.getInfoVertex(i).getLat(), grafo.getInfoVertex(i).getLon());
+			if(distanciaActual>distanciaFinal)
+			{
+				distanciaFinal=distanciaActual;
+				idVertice=i;
+			}
+		}
+		return idVertice;
 		
 	}
 	public void encontrarCaminoMenorTiempoPromedio(double latitudO, double longitudO, double latitudD,
 			double longitudD) {
 		// TODO Auto-generated method stub
+		int vertice1=darVerticeMasCercano(latitudO, longitudO);
+		int vertice2=darVerticeMasCercano(latitudD, longitudD);
+		double costo2=calcularCosto2(grafo.getInfoVertex(vertice1).getMovementID(), grafo.getInfoVertex(vertice2).getMovementID());
+		
+		
 		
 	}
 	public void nVerticesMenorVelocidadPromedio(int n) {
-		// TODO Auto-generated method stub
 		
 	}
 	public void calcularMSTPrim() {
 		// TODO Auto-generated method stub
-		
+				LazyPrimMST mst=grafo.mstPrim();
+				//NO SE COMO PONER CUANTO SE DEMORA EL ALGORITMO
+				System.out.println("El numero de vertices es "+ mst.V());
+				System.out.println("Los arcos son: ");
+				for (Edge e : mst.edges()) {
+		            System.out.println("Arco: "+e.toString());
+		        }
+				System.out.println("El peso es: "+mst.weight());
+				
+				String ruta = "./data/mapa.html";
+				int contador = 0;
+				PrintWriter writer = null;
+				try
+				{
+					writer = new PrintWriter(ruta);
+				}catch (Exception e) {
+					e.printStackTrace();
+				}
+				writer.println("<!DOCTYPE html>");
+				writer.println("<html>");
+				writer.println("<head>");
+				writer.println("<meta name=\"viewport\" content=\"initial-scale=1.0, user-scalable=no\">");
+				writer.println("<meta charset=\"utf-8\">");
+				writer.println("<title>Simple Polylines</title>");
+				writer.println("<style>");
+				writer.println("#map {");
+				writer.println("height: 100%;");
+				writer.println("}");
+				writer.println("html,");
+				writer.println("body {");
+				writer.println("height: 100%;");
+				writer.println("margin: 0;");
+				writer.println("padding: 0;");
+				writer.println("}");
+				writer.println("</style>");
+				writer.println("</head>");
+				writer.println("<body>");
+				writer.println("<div id=\"map\"></div>");
+				writer.println("<script>");
+				writer.println("function initMap() {");
+				writer.println("var map = new google.maps.Map(document.getElementById('map'), {");
+				writer.println("zoom: 5,");
+				writer.println("center: {");
+				writer.println("lat: 40.162838,");
+				writer.println("lng: -3.494526");
+				writer.println("},");
+				writer.println("mapTypeId: 'roadmap'");
+				writer.println("});");
+				writer.println("var line;");
+				writer.println("var path;");
+				for(Vertex<Integer,Informacion> inter: grafo.darVertices())
+				{
+					if(inter != null)
+					{
+						for(Edge arcos : mst.edges())
+						{
+							if(arcos != null)
+							{
+								Informacion llegada = grafo.getInfoVertex(arcos.other(0));
+								if(llegada != null)
+								{
+									Informacion info = (Informacion) inter.darInfo();
+									writer.println("line = [");
+									writer.println("{");
+									writer.println("lat: " + info.getLat() + ",");
+									writer.println("lng: " + info.getLon());
+									writer.println("},");
+									writer.println("{");
+									writer.println("lat: " + llegada.getLat()+ ",");
+									writer.println("lng: " + llegada.getLon());
+									writer.println("}");
+									writer.println("];");
+									writer.println("path = new google.maps.Polyline({");
+									writer.println("path: line,");
+									writer.println("strokeColor: '#FF0000',");
+									writer.println("strokeWeight: 2");
+									writer.println("});");
+									writer.println("path.setMap(map);");
+									contador++;
+									System.out.println(contador);
+								}
+							}
+						}
+					}
+				}
+				writer.println("}");
+				writer.println("</script>");
+				writer.println("<script async defer src=\"https://maps.googleapis.com/maps/api/js?key=&callback=initMap\">");
+				writer.println("</script>");
+				writer.println("</body>");
+				writer.println("</html>");
+				writer.close();
+				
 	}
 	public void caminoMenorCostoHaversine(double latitudO, double longitudO, double latitudD, double longitudD) {
 		// TODO Auto-generated method stub
-		
+
 	}
 	public void indicarVerticesAlcanzablesTiempoT(double latitud, double longitud, Double tiempo) {
 		// TODO Auto-generated method stub
-		
+
 	}
 	public void calcularMSTKruskal() {
 		// TODO Auto-generated method stub
@@ -326,15 +438,15 @@ public class MVCModelo<K> {
 	}
 	public void construirNuevoGrafo() {
 		// TODO Auto-generated method stub
-		
+
 	}
 	public void calcularDijkstra() {
 		// TODO Auto-generated method stub
-		
+
 	}
 	public void caminoMenorLongituDesdeLaZona(double latitudO, double longitudO) {
 		// TODO Auto-generated method stub
-		
+
 	}
-	
+
 }

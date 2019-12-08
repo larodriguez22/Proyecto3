@@ -89,7 +89,8 @@ public class Controller {
 				double latitud=lector.nextDouble();
 				System.out.println("Escriba la longitud de la zona que desea consultar:");
 				double longitud=lector.nextDouble();
-				modelo.darVerticeMasCercano( latitud, longitud);
+				int id=modelo.darVerticeMasCercano( latitud, longitud);
+				System.out.println("El ID del vertice mas cercano a la zona dada es: "+id);
 				
 				break;	
 				
