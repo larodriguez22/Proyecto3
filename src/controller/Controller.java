@@ -171,7 +171,7 @@ public class Controller {
 				latitudO=lector.nextDouble();
 				System.out.println("Escriba la longitud de la zona de origen que desea consultar:");
 				longitudO=lector.nextDouble();
-				modelo.caminoMenorLongituDesdeLaZona(latitudO,longitudO);
+				modelo.caminoMasDistanteDeLaZonaCorto(latitudO,longitudO);
 				
 				break;	
 				

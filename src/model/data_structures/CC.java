@@ -169,38 +169,6 @@ public class CC {
         if (v < 0 || v >= V)
             throw new IllegalArgumentException("vertex " + v + " is not between 0 and " + (V-1));
     }
-
-    /**
-     * Unit tests the {@code CC} data type.
-     *
-     * @param args the command-line arguments
-     */
-    public static void main(String[] args) {
-        In in = new In(args[0]);
-        Graph G = new Graph(in);
-        CC cc = new CC(G);
-
-        // number of connected components
-        int m = cc.count();
-        StdOut.println(m + " components");
-
-        // compute list of vertices in each connected component
-        Queue<Integer>[] components = (Queue<Integer>[]) new Queue[m];
-        for (int i = 0; i < m; i++) {
-            components[i] = new Queue<Integer>();
-        }
-        for (int v = 0; v < G.V(); v++) {
-            components[cc.id(v)].enqueue(v);
-        }
-
-        // print results
-        for (int i = 0; i < m; i++) {
-            for (int v : components[i]) {
-                StdOut.print(v + " ");
-            }
-            StdOut.println();
-        }
-    }
 }
 
 /******************************************************************************

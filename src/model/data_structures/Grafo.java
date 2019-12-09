@@ -123,6 +123,17 @@ public class Grafo<K, IV> {
 		LazyPrimMST mst = new LazyPrimMST(g);
 		return mst;
 	}
+	public KruskalMST mstPrimk()
+	{
+	KruskalMST mst = new KruskalMST(g);
+		return mst;
+	}
+	public DijkstraUndirectedSP mstPrimD(int source)
+	{
+		DijkstraUndirectedSP mst= new DijkstraUndirectedSP(g,source);
+		return mst;
+	}
+	
 
 	public void setArc(int llave3, int llave4) {
 		// TODO Auto-generated method stub
