@@ -144,5 +144,23 @@ public class Grafo<K, IV> {
 		// TODO Auto-generated method stub
 		return 0;
 	}
+	
+	public Grafo grafoMenorDistanciaA(int idVerticeOrigen, int idVerticeDestino)
+	{
+		DijkstraUndirectedSP sp = new DijkstraUndirectedSP(this, idVerticeOrigen, "distancia");
+		Grafo aRetornar = sp.grafoDistanciaMinima(idVerticeDestino, this);
+		return aRetornar;
+	}
+	public Iterable caminoMenorDistanciaA(int idVerticeOrigen, int idVerticeDestino)
+	{
+		DijkstraUndirectedSP sp = new DijkstraUndirectedSP(this, idVerticeOrigen, "distancia");
+		Iterable aRetornar = sp.pathTo(idVerticeDestino, this);
+		return aRetornar;
+	}
+
+	public Vertex getVertex(int id)
+	{
+		return (Vertex) vertices[id];
+	}
 
 }

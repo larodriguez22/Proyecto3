@@ -34,6 +34,8 @@ public class Edge implements Comparable<Edge> {
     private double weight2;
   //VELOCIDAD DEL ARCCO
     private double weight3;
+    
+    private boolean marked;
 
     /**
      * Initializes an edge between vertices {@code v} and {@code w} of
@@ -137,6 +139,20 @@ public class Edge implements Comparable<Edge> {
 	
 	public void setWeight3(Double weight) {
 		weight3=weight;
+	}
+	
+	public void marcar()
+	{
+		marked = true;
+	}
+	public void desmarcar()
+	{
+		marked = false;
+	}
+	
+	public boolean isMarked()
+	{
+		return marked;
 	}
 }
 

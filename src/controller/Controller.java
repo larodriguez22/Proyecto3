@@ -1,9 +1,13 @@
 package controller;
 
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.Scanner;
 
+import model.data_structures.Edge;
+import model.data_structures.Grafo;
 import model.logic.MVCModelo;
+import model.logic.Vertex;
 import view.MVCView;
 
 public class Controller {
@@ -65,7 +69,7 @@ public class Controller {
 			case 3: 
 				System.out.println("--------- \n Esquema JSON para persistir el grafo: (leer) \n---------"); 
 				try {
-					modelo.hacerHTML();dato = lector.next();
+					modelo.hacerHTMLInicial();dato = lector.next();
 					modelo.leerJson();
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
@@ -76,7 +80,7 @@ public class Controller {
 			case 4: 
 				System.out.println("--------- \n Cargar HTML \n---------"); 
 				try {
-					modelo.hacerHTML();
+					modelo.hacerHTMLInicial();
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -104,7 +108,71 @@ public class Controller {
 				double latitudD=lector.nextDouble();
 				System.out.println("Escriba la longitud de la zona de destino que desea consultar:");
 				double longitudD=lector.nextDouble();
-				modelo.encontrarCaminoMenorTiempoPromedio(latitudO, longitudO, latitudD, longitudD);
+				modelo.encontrarCaminoTiempoMinimo(latitudO, longitudO, latitudD, longitudD);
+				
+				Scanner lector6 = new Scanner(System.in);
+				view.printMessage("Ingrese latitud origen");
+				double latOrigen = lector6.nextDouble();
+				view.printMessage("Ingrese longitud origen");
+				double longOrigen = lector6.nextDouble();
+				view.printMessage("Ingrese latitud destino");
+				double latDestino = lector6.nextDouble();
+				view.printMessage("Ingrese longitud destino");
+				double longDestino = lector6.nextDouble();
+				try {
+					Grafo tiempoMinimo = modelo.encontrarGrafoTiempoMinimo(latOrigen, longOrigen, latDestino, longDestino);
+					Iterable caminoDistanciaMinima = modelo.encontrarCaminoTiempoMinimo(latOrigen, longOrigen, latDestino, longDestino);
+					
+					double totalTiempo = 0;
+					double totalDistancia = 0;
+					int cantidadVertices=0;
+					if(caminoDistanciaMinima==null)
+					{
+						view.printMessage("No existe un camino entre las coordenadas dadas.");
+					}
+					else
+					{
+						Iterator it = caminoDistanciaMinima.iterator();
+						view.printMessage("El camino a seguir es:");
+						Edge a;
+						while(it.hasNext())
+						{					
+							a = (Edge) it.next();
+							if(a!=null)
+							{
+								
+								view.printMessage(a.either()+"->"+a.other(a.either()));
+								totalTiempo+=a.weightTiempoPromedio();
+								totalDistancia+=a.weightHarvesineDistance();
+								cantidadVertices++;
+
+							}
+							
+						}
+						view.printMessage("El total de vertices es: "+cantidadVertices);
+						view.printMessage("Sus vertices son: ");
+						Vertex[] vertices = tiempoMinimo.darVertices();
+						for(Vertex v : vertices)
+						{
+							if(v!=null)
+							{
+								view.printMessage("ID: "+ v.darId());
+								view.printMessage("Latitud: "+ tiempoMinimo.getInfoVertex(v));
+								view.printMessage("Longitud: " +tiempoMinimo.getInfoVertex(v));
+
+							}
+						}
+						view.printMessage("El tiempo estimado es: "+totalTiempo);
+						view.printMessage("La distancia total del recorrido es: "+ totalDistancia);
+						modelo.crearArchivoHTML("caminoMenorDistancia", tiempoMinimo, 1, 6, -80, -70, true);	
+					}
+
+				} 
+				catch (Exception e) 
+				{
+					e.printStackTrace();
+				}
+				lector6.close();
 				
 				break;	
 				
