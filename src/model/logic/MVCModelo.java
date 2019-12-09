@@ -20,11 +20,9 @@ import model.data_structures.Haversine;
 import model.data_structures.IndexMinPQ;
 import model.data_structures.KruskalMST;
 import model.data_structures.LazyPrimMST;
-<<<<<<< HEAD
 import model.data_structures.MinPQ;
-=======
 import model.data_structures.MaxPQ;
->>>>>>> cc1412037a3cdeea52b561a86c487d6e11ca55f5
+
 import model.data_structures.Queue;
 import model.data_structures.SeparateChainingHashST;
 import model.data_structures.StdOut;
@@ -342,7 +340,6 @@ public class MVCModelo<K> {
 	
 	//YO
 	public void nVerticesMenorVelocidadPromedio(int n) {
-<<<<<<< HEAD
 		Vertex []auxV=grafo.darVertices();
 		ArrayList <Double> velocidades=new ArrayList <Double>();
 		int mayorcc=0;
@@ -398,6 +395,7 @@ public class MVCModelo<K> {
 		
 		
 	}
+	/*
 	public void calcularMSTPrim() {
 		// TODO Auto-generated method stub
 			long startTime= System.currentTimeMillis();
@@ -453,7 +451,7 @@ public class MVCModelo<K> {
 				writer.println("var line;");
 				writer.println("var path;");
 				for(Vertex<Integer,Informacion> inter: grafo.darVertices())
-=======
+
 		Queue<String> cola = new Queue<String>();
 		int tamanio = n;
 		MaxPQ<Vertex> menores = new MaxPQ<>();
@@ -491,7 +489,7 @@ public class MVCModelo<K> {
 			Informacion info = (Informacion) v.darInfo();
 			cola.enqueue("ID: " + v.darId() + " Latitud: " + info.getLat() + " Longitud: " + info.getLon());
 		}
-	}
+	}*/
 	public void calcularMSTPrim() {
 		// TODO Auto-generated method stub
 		LazyPrimMST mst=grafo.mstPrim();
@@ -549,7 +547,7 @@ public class MVCModelo<K> {
 			if(inter != null)
 			{
 				for(Edge arcos : mst.edges())
->>>>>>> cc1412037a3cdeea52b561a86c487d6e11ca55f5
+
 				{
 					if(arcos != null)
 					{
@@ -596,8 +594,8 @@ public class MVCModelo<K> {
 		double tiempo=0;
 		int vertice1=darVerticeMasCercano(latitudO, longitudO);
 		int vertice2=darVerticeMasCercano(latitudD, longitudD);
-			DijkstraUndirectedSP sp=grafo.mstPrimD(vertice1);
-			Iterator ite=(Iterator)sp.pathTo(vertice2);
+			DijkstraUndirectedSP sp=grafo.mstPrimD(vertice1,"distancia");
+			Iterator ite=(Iterator)sp.pathTo(vertice2,grafo);
 			int vertice0=vertice1;
 			while(ite.hasNext()){
 				Edge aux=(Edge) ite.next();
@@ -638,7 +636,7 @@ public class MVCModelo<K> {
 	}
 	public void calcularMSTKruskal() {
 		// TODO Auto-generated method stub
-<<<<<<< HEAD
+
 		long startTime= System.currentTimeMillis();
 		KruskalMST mst=grafo.mstPrimk();
 		long endTime= System.currentTimeMillis();
@@ -733,8 +731,8 @@ public class MVCModelo<K> {
 		writer.println("</html>");
 		writer.close();
 		
-=======
->>>>>>> cc1412037a3cdeea52b561a86c487d6e11ca55f5
+
+
 
 	}
 	public void construirNuevoGrafo() {
@@ -743,32 +741,14 @@ public class MVCModelo<K> {
 	}
 	public void calcularDijkstra() {
 		// TODO Auto-generated method stub
-
-	}
-	public void caminoMasDistanteDeLaZonaCorto(double latitudO, double longitudO) {
-		// TODO Auto-generated method stub
-		int vertice=darVerticeMasCercano(latitudO, longitudO);
-
-	}
-<<<<<<< HEAD
-	//metodos extra
-	public void marcarGmaps(double longitud, double latitud)
-	{
+		long startTime= System.currentTimeMillis();
+		DijkstraUndirectedSP mst=grafo.mstPrimD(0,"distancia");
+		long endTime= System.currentTimeMillis();
+		System.out.println( "Tiempo que se demora el algoritmo Dijkstra:" + (endTime-startTime));
+		for (Edge e : mst.edges()) {
+            System.out.println("Arco: "+e.toString());
+        }
 		String ruta = "./data/mapa.html";
-=======
-	public void crearArchivoHTML(String pNombreArchivo, Grafo G, double pLatMin, double pLatMax, double pLongMin, double pLongMax, boolean pColor) {
-		// TODO Auto-generated method stub
-		Grafo nuevo;
-		if(G==null)
-		{
-			nuevo = grafo;
-		}
-		else
-		{
-			nuevo = G;
-		}
-		String ruta = "./data/"+pNombreArchivo+".html";
->>>>>>> cc1412037a3cdeea52b561a86c487d6e11ca55f5
 		int contador = 0;
 		PrintWriter writer = null;
 		try
@@ -780,7 +760,6 @@ public class MVCModelo<K> {
 		writer.println("<!DOCTYPE html>");
 		writer.println("<html>");
 		writer.println("<head>");
-<<<<<<< HEAD
 		writer.println("<meta name=\"viewport\" content=\"initial-scale=1.0, user-scalable=no\">");
 		writer.println("<meta charset=\"utf-8\">");
 		writer.println("<title>Simple Polylines</title>");
@@ -805,46 +784,16 @@ public class MVCModelo<K> {
 		writer.println("center: {");
 		writer.println("lat: 40.162838,");
 		writer.println("lng: -3.494526");
-=======
-		writer.println("  <meta name=\"viewport\" content=\"initial-scale=1.0, user-scalable=no\">");
-		writer.println("  <meta charset=\"utf-8\">");
-		writer.println("  <title>"+pNombreArchivo+"</title>");
-		writer.println("  <style>");
-		writer.println("    #map {");
-		writer.println("      height: 100%;");
-		writer.println("    }");
-		writer.println("    html,");
-		writer.println("    body {");
-		writer.println("      height: 100%;");
-		writer.println("      margin: 0;");
-		writer.println("      padding: 0;");
-		writer.println("    }");
-		writer.println("  </style>");
-		writer.println("</head>");
-
-
-
-		writer.println("<body>");
-		writer.println("  <div id=\"map\"></div>");
-		writer.println("  <script>");
-		writer.println("    function initMap() {");
-		writer.println("      var map = new google.maps.Map(document.getElementById('map'), {");
-		writer.println("        zoom: 15.5,");
-		writer.println("center: {");
-		writer.println("lat: 4.609537,");
-		writer.println("lng: -74.078715");
->>>>>>> cc1412037a3cdeea52b561a86c487d6e11ca55f5
 		writer.println("},");
 		writer.println("mapTypeId: 'roadmap'");
 		writer.println("});");
 		writer.println("var line;");
 		writer.println("var path;");
-<<<<<<< HEAD
 		for(Vertex<Integer,Informacion> inter: grafo.darVertices())
 		{
 			if(inter != null)
 			{
-				/*for(Edge arcos : mst.edges())
+				for(Edge arcos : mst.edges())
 				{
 					if(arcos != null)
 					{
@@ -860,88 +809,11 @@ public class MVCModelo<K> {
 							writer.println("{");
 							writer.println("lat: " + llegada.getLat()+ ",");
 							writer.println("lng: " + llegada.getLon());
-=======
-
-		boolean color = pColor;
-		for(Vertex vertice: nuevo.darVertices())
-		{
-			if(vertice!=null)
-			{
-
-				double latV= ((Informacion) nuevo.getInfoVertex(vertice)).getLat();
-				double longV= ((Informacion) nuevo.getInfoVertex(vertice)).getLon();
-				//Default values: 4.621360||4.597714||-74.062707||-74.094723
-
-				double latMin = 0;
-				double latMax = 0;
-				double longMin = 0;
-				double longMax = 0;
-
-				if(pLatMax == -1&&pLatMin==-1&&pLongMax==-1&&pLongMin==-1)
-				{
-					latMin = 4.597714;
-					latMax = 4.621360;
-					longMin = -74.094723;
-					longMax = -74.062707;
-				}
-				else
-				{
-					latMin = pLatMin;
-					latMax = pLatMax;
-					longMin = pLongMin;
-					longMax = pLongMax;
-				}
-
-				if(latV<=latMax&&latV>=latMin&&longV>=longMin&&longV<=longMax)
-				{
-
-					writer.println("	  var circle = new google.maps.Circle ({");
-					writer.println("		map: map,");
-					writer.println("		center: new google.maps.LatLng("+latV+","+longV+"),");
-					writer.println("		radius : 10,");
-					writer.println("		strokeColor : '#000000',");
-					if(color)
-					{
-						writer.println("		fillColor : 'red'");
-						color = false;
-					}
-					else
-					{
-						writer.println("		fillColor : 'blue'");
-					}
-					writer.println("		});");
-
-					Edge[] arcos = vertice.darArcos();
-
-
-
-
-					for(Edge arco : arcos)
-					{
-
-
-
-						Informacion vDestino = (Informacion) nuevo.getInfoVertex(arco.either());
-
-						double latVDest= vDestino.getLat();
-						double longVDest= vDestino.getLon();
-
-						if(!arco.isMarked()&&(latVDest<=latMax&&latVDest>=latMin&&longVDest>=longMin&&longVDest<=longMax))
-						{
-							writer.println("line = [{");
-							writer.println("lat: " + latV + ",");
-							writer.println("lng: " + longV);
-							writer.println("},");
-							writer.println("{");
-							writer.println("lat: " + latVDest + ",");
-							writer.println("lng: " + longVDest);
->>>>>>> cc1412037a3cdeea52b561a86c487d6e11ca55f5
 							writer.println("}");
 							writer.println("];");
 							writer.println("path = new google.maps.Polyline({");
 							writer.println("path: line,");
 							writer.println("strokeColor: '#FF0000',");
-<<<<<<< HEAD
 							writer.println("strokeWeight: 2");
 							writer.println("});");
 							writer.println("path.setMap(map);");
@@ -949,26 +821,9 @@ public class MVCModelo<K> {
 							System.out.println(contador);
 						}
 					}
-				}*/
-			}
-		}
-=======
-							writer.println("strokeWeight: 1");
-							writer.println("});");
-							writer.println("path.setMap(map);");
-							contador++;
-							if(arco.other((int) vertice.darId())!=-1)
-							{
-								arco.marcar();
-							}
-						}				
-					}
 				}
 			}
-
 		}
-
->>>>>>> cc1412037a3cdeea52b561a86c487d6e11ca55f5
 		writer.println("}");
 		writer.println("</script>");
 		writer.println("<script async defer src=\"https://maps.googleapis.com/maps/api/js?key=&callback=initMap\">");
@@ -976,13 +831,46 @@ public class MVCModelo<K> {
 		writer.println("</body>");
 		writer.println("</html>");
 		writer.close();
-<<<<<<< HEAD
+
+	}
+	public void caminoMasDistanteDeLaZonaCorto(double latitudO, double longitudO) {
+		// TODO Auto-generated method stub
+		long startTime= System.currentTimeMillis();
+		int vertice=darVerticeMasCercano(latitudO, longitudO);
+		double mayor=0;
+		int index=0;
+		DijkstraUndirectedSP sp=grafo.mstPrimD(vertice,"distancia");
+		for (int i=0;i<grafo.darVertices().length;i++){
+			if(sp.hasPathTo(i)){
+				if(sp.distTo(i)>mayor){
+					index=i;
+					mayor=sp.distTo(i);
+				}
+			}
+		}
+		long endTime= System.currentTimeMillis();
+		System.out.println( "Tiempo que se demora el algoritmo:" + (endTime-startTime));
+		Iterator ite= (Iterator) sp.pathTo(index, grafo);
+		int vertice0=0;
+		while(ite.hasNext()){
+			Edge aux=(Edge) ite.next();
+			vertice0=aux.other(vertice0);
+			Informacion h=grafo.getInfoVertex(vertice0);
+			System.out.println("Numero de arcos: "+grafo.getVertex(vertice0).darArcos().length);
+					System.out.println("ID: "+h.getMovementID());	
+		}
+		
+
+	}
+
+	//metodos extra
+	public void marcarGmaps(double longitud, double latitud)
+	{
+		String ruta = "./data/mapa.html";
+	}
+
+	public void crearArchivoHTML(String pNombreArchivo, Grafo G, double pLatMin, double pLatMax, double pLongMin, double pLongMax, boolean pColor) {
 		
 	}
 }
-=======
-		System.out.println("Se genero el archivo, lo podrá encontrar en la carpeta data.");
 
-	}
-}
->>>>>>> cc1412037a3cdeea52b561a86c487d6e11ca55f5

@@ -1,6 +1,4 @@
 package model.data_structures;
-
-<<<<<<< HEAD
 import model.logic.Vertex;
 
 /******************************************************************************
@@ -38,8 +36,7 @@ import model.logic.Vertex;
  *  0 to 3 (0.31)  0-460790 0.00190  460790-752483 0.00194   ...   3-698373 0.00172
  *
  ******************************************************************************/
-=======
->>>>>>> cc1412037a3cdeea52b561a86c487d6e11ca55f5
+
 
 import java.util.Stack;
 
@@ -121,14 +118,14 @@ public class DijkstraUndirectedSP
         
     }
 
-<<<<<<< HEAD
+
     // throw an IllegalArgumentException unless {@code 0 <= v < V}
     private void validateVertex(int s) {
         int V = distTo.length;
         if (s < 0 || s >= V)
             throw new IllegalArgumentException("vertex " + s + " is not between 0 and " + (V-1));
     }
-=======
+
 
 	public double distTo(int idVertice) 
 	{   
@@ -207,6 +204,9 @@ public class DijkstraUndirectedSP
 		}
 		return tEsti;
 	}
->>>>>>> cc1412037a3cdeea52b561a86c487d6e11ca55f5
+    public Iterable<Edge> edges() {
+    	Iterable pl=null;
+        return pl;
+    }
 
 }

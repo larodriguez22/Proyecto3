@@ -128,21 +128,10 @@ public class Grafo<K, IV> {
 	KruskalMST mst = new KruskalMST(g);
 		return mst;
 	}
-	public DijkstraUndirectedSP mstPrimD(int source)
+	public DijkstraUndirectedSP mstPrimD(int source, String tipo)
 	{
-		DijkstraUndirectedSP mst= new DijkstraUndirectedSP(g,source);
+		DijkstraUndirectedSP mst= new DijkstraUndirectedSP(this,source,tipo);
 		return mst;
-	}
-	
-
-	public void setArc(int llave3, int llave4) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public int getCostArc(int llave1, int llave2) {
-		// TODO Auto-generated method stub
-		return 0;
 	}
 	
 	public Grafo grafoMenorDistanciaA(int idVerticeOrigen, int idVerticeDestino)
