@@ -7,6 +7,9 @@ public class Viaje implements Comparable<Viaje>
 	private double info;
 	private double mean_travel_time;
 	private double standard_deviation_travel_time;
+
+	private double latitud;
+	private double longitud;
 	
 	public Viaje(String _sourceid, String _dstid, String _info, String _mean_travel_time, String _standard_deviation_travel_time)
 	{
@@ -73,6 +76,22 @@ public class Viaje implements Comparable<Viaje>
 					return 0;
 				}
 	
+	}
+	//Extra
+	public double getLatitud() {
+		return latitud;
+	}
+
+	public void setLatitud(double latitud) {
+		this.latitud = latitud;
+	}
+
+	public double getLongitud() {
+		return longitud;
+	}
+
+	public void setLongitud(double longitud) {
+		this.longitud = longitud;
 	}
 
 }

@@ -31,6 +31,7 @@ import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.opencsv.CSVReader;
+import com.sun.prism.paint.Color;
 
 
 /**
@@ -321,7 +322,6 @@ public class MVCModelo<K> {
 		return idVertice;
 
 	}
-	//YO
 	public Grafo encontrarGrafoTiempoMinimo(double pLatOrigen,double pLongOrigen, double pLatDestino, double pLongDestino)
 	{
 		//TODO : metodo
@@ -335,10 +335,9 @@ public class MVCModelo<K> {
 		int vIdOrigen = darVerticeMasCercano(pLatOrigen, pLongOrigen);
 		int vIdDestino = darVerticeMasCercano(pLatDestino, pLongDestino);
 		Iterable camino = grafo.caminoMenorDistanciaA(vIdOrigen, vIdDestino);
+		
 		return camino;
 	}
-	
-	//YO
 	public void nVerticesMenorVelocidadPromedio(int n) {
 		Vertex []auxV=grafo.darVertices();
 		ArrayList <Double> velocidades=new ArrayList <Double>();
@@ -371,7 +370,7 @@ public class MVCModelo<K> {
 			System.out.println("Latitud:"+e.getLat());
 			System.out.println("Longitud:"+e.getLon());
 			System.out.println("Identificador:"+e.getMovementID());
-			marcarGmaps(e.getLat(),e.getLon());
+			crearArchivoHTML("Menor Velocidad",grafo,e.getLat(),e.getLon(),e.getLat(),e.getLon(),true);
 			Iterator ite =(Iterator) grafo.getCC(index);
 			int cantidad=0;
 			while(ite.hasNext()){
@@ -606,6 +605,8 @@ public class MVCModelo<K> {
 				System.out.println("Latitud: "+h.getLat());
 				System.out.println("Longitud: "+h.getLon());
 				System.out.println("ID: "+h.getMovementID());
+				crearArchivoHTML("Haversine"+vertice0,grafo,latitudO,latitudD,h.getLat(),h.getLon(),false);
+				
 			}
 			System.out.println("Tiempo: "+tiempo);
 			System.out.println("Distancia Haversine: "+distanciahaversine);
@@ -627,7 +628,7 @@ public class MVCModelo<K> {
 				System.out.println("latitud:"+a.getLat());
 				System.out.println("longitud:"+a.getLon());
 				System.out.println("ID:"+(int)viajes.get(vertice1+"-"+i).getDstid());
-				marcarGmaps(latitud,longitud);
+				crearArchivoHTML("indicar Vertices Alcanzables",grafo,latitud,longitud,latitud,longitud,true);
 				}
 			}
 			
@@ -737,6 +738,45 @@ public class MVCModelo<K> {
 	}
 	public void construirNuevoGrafo() {
 		// TODO Auto-generated method stub
+		int v=0;
+		Grafo p=new Grafo(v);
+		for(int i=1;i<viajes.size();i++){
+			String latitud=""+4.5+""+i;
+			double dlatitud=Double.parseDouble(latitud);
+			String longitud=""+-74.0+""+i;
+			double dlongitud=Double.parseDouble(longitud);
+			viajes.get(i+"-"+i).setLongitud(dlongitud);
+			viajes.get(i+"-"+i).setLatitud(dlatitud);
+			p.addVertex(i, viajes.get(i+"-"+i));
+			
+		}
+		for(int i=1;i<viajes.size();i++){
+			for(int j=1;i<viajes.size();j++){
+				if(i!=j){
+				if(viajes.get(i+"-"+j)!=null){
+					if(p.darVertices()[i].darConexion()!=p.darVertices()[j]||p.darVertices()[j].darConexion()!=p.darVertices()[i]){
+					
+					p.addEdge(i, j,viajes.get(i+"-"+j).getMean_travel_time() );
+					v++;
+					}
+				}
+				else{
+					p.addEdge(i, j,200 );
+					v++;
+				}
+				}
+			}
+		}
+		System.out.println("Cantidad Vertices"+p.V());
+		System.out.println("Cantidad Arcos"+p.E());
+		
+		for(int i=0;i< p.V();i++)
+		{
+			for (int j=0;j<p.V();j++)
+			{
+				crearArchivoHTML("nuevo grafo", p, viajes.get(i+"-"+i).getLatitud(),  viajes.get(i+"-"+i).getLatitud(), viajes.get(i+"-"+i).getLongitud(), viajes.get(i+"-"+i).getLongitud(), false);
+			}
+		}
 
 	}
 	public void calcularDijkstra() {
@@ -864,13 +904,166 @@ public class MVCModelo<K> {
 	}
 
 	//metodos extra
-	public void marcarGmaps(double longitud, double latitud)
-	{
-		String ruta = "./data/mapa.html";
-	}
 
 	public void crearArchivoHTML(String pNombreArchivo, Grafo G, double pLatMin, double pLatMax, double pLongMin, double pLongMax, boolean pColor) {
-		
-	}
+		// TODO Auto-generated method stub
+				Grafo nuevo;
+				if(G==null)
+				{
+					nuevo = grafo;
+				}
+				else
+				{
+					nuevo = G;
+				}
+				String ruta = "./data/"+pNombreArchivo+".html";
+				int contador = 0;
+				PrintWriter writer = null;
+				try
+				{
+					writer = new PrintWriter(ruta);
+				}catch (Exception e) {
+					e.printStackTrace();
+				}
+				writer.println("<!DOCTYPE html>");
+				writer.println("<html>");
+				writer.println("<head>");
+				writer.println("  <meta name=\"viewport\" content=\"initial-scale=1.0, user-scalable=no\">");
+				writer.println("  <meta charset=\"utf-8\">");
+				writer.println("  <title>"+pNombreArchivo+"</title>");
+				writer.println("  <style>");
+				writer.println("    #map {");
+				writer.println("      height: 100%;");
+				writer.println("    }");
+				writer.println("    html,");
+				writer.println("    body {");
+				writer.println("      height: 100%;");
+				writer.println("      margin: 0;");
+				writer.println("      padding: 0;");
+				writer.println("    }");
+				writer.println("  </style>");
+				writer.println("</head>");
+
+
+
+				writer.println("<body>");
+				writer.println("  <div id=\"map\"></div>");
+				writer.println("  <script>");
+				writer.println("    function initMap() {");
+				writer.println("      var map = new google.maps.Map(document.getElementById('map'), {");
+				writer.println("        zoom: 15.5,");
+				writer.println("center: {");
+				writer.println("lat: 4.609537,");
+				writer.println("lng: -74.078715");
+				writer.println("},");
+				writer.println("mapTypeId: 'roadmap'");
+				writer.println("});");
+				writer.println("var line;");
+				writer.println("var path;");
+
+				boolean color = pColor;
+				for(Vertex vertice: nuevo.darVertices())
+				{
+					if(vertice!=null)
+					{
+
+						double latV= ((Informacion) nuevo.getInfoVertex(vertice)).getLat();
+						double longV= ((Informacion) nuevo.getInfoVertex(vertice)).getLon();
+						//Default values: 4.621360||4.597714||-74.062707||-74.094723
+
+						double latMin = 0;
+						double latMax = 0;
+						double longMin = 0;
+						double longMax = 0;
+
+						if(pLatMax == -1&&pLatMin==-1&&pLongMax==-1&&pLongMin==-1)
+						{
+							latMin = 4.597714;
+							latMax = 4.621360;
+							longMin = -74.094723;
+							longMax = -74.062707;
+						}
+						else
+						{
+							latMin = pLatMin;
+							latMax = pLatMax;
+							longMin = pLongMin;
+							longMax = pLongMax;
+						}
+
+						if(latV<=latMax&&latV>=latMin&&longV>=longMin&&longV<=longMax)
+						{
+
+							writer.println("	  var circle = new google.maps.Circle ({");
+							writer.println("		map: map,");
+							writer.println("		center: new google.maps.LatLng("+latV+","+longV+"),");
+							writer.println("		radius : 10,");
+							writer.println("		strokeColor : '#000000',");
+							if(color)
+							{
+								writer.println("		fillColor : 'red'");
+								color = false;
+							}
+							else
+							{
+								writer.println("		fillColor : 'blue'");
+							}
+							writer.println("		});");
+
+							Edge[] arcos = vertice.darArcos();
+
+
+
+
+							for(Edge arco : arcos)
+							{
+
+
+
+								Informacion vDestino = (Informacion) nuevo.getInfoVertex(arco.either());
+
+								double latVDest= vDestino.getLat();
+								double longVDest= vDestino.getLon();
+
+								if(!arco.isMarked()&&(latVDest<=latMax&&latVDest>=latMin&&longVDest>=longMin&&longVDest<=longMax))
+								{
+									writer.println("line = [{");
+									writer.println("lat: " + latV + ",");
+									writer.println("lng: " + longV);
+									writer.println("},");
+									writer.println("{");
+									writer.println("lat: " + latVDest + ",");
+									writer.println("lng: " + longVDest);
+									writer.println("}");
+									writer.println("];");
+									writer.println("path = new google.maps.Polyline({");
+									writer.println("path: line,");
+									writer.println("strokeColor: '#FF0000',");
+									writer.println("strokeWeight: 1");
+									writer.println("});");
+									writer.println("path.setMap(map);");
+									contador++;
+									if(arco.other((int) vertice.darId())!=-1)
+									{
+										arco.marcar();
+									}
+								}				
+							}
+						}
+					}
+
+				}
+
+				writer.println("}");
+				writer.println("</script>");
+				writer.println("<script async defer src=\"https://maps.googleapis.com/maps/api/js?key=&callback=initMap\">");
+				writer.println("</script>");
+				writer.println("</body>");
+				writer.println("</html>");
+				writer.close();
+				System.out.println("Se genero el archivo, lo podrá encontrar en la carpeta data.");
+
+			}
+	
 }
 
